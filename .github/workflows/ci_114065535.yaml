@@ -1,0 +1,52 @@
+name: HW4 CI
+
+on: 
+  push: 
+    branches:
+      - "feature/ci-observe"
+
+jobs: 
+  ci-verification-pipeline:
+    runs-on: ubuntu-latest
+    permissions: 
+      contents: read
+      actions: read
+      checks: write
+
+    steps:
+      # Move codes to Cloud VM
+      - name: Checkout Repository
+        uses: actions/checkout@v5
+
+      # Install Node.js in Cloud VM
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+
+      # Install all dependencies listed in package.json
+      - name: Install dependencies and run potential fix
+        run: |
+          npm ci
+          npm audit fix --audit-level=high
+
+      # 驗證 Typescript 型別 (TODO)
+      - name: Typescript Typecheck
+        run: npx tsc --noEmit
+
+      # 驗證 Prettier (TODO)
+      - name: Prettier Check
+        run: npx prettier --check .
+
+      # 自動執行 app.test script (TODO)
+      - name: Automatically run test when pushed
+        run: npm test -- --reporter=default --reporter=junit --outputFile=test-junit.xml
+
+      # Visualize CI result
+      - name: Publish Test Results on GitHub Actions
+        uses: dorny/test-reporter@v1
+        if: always() # publish the report even if it fails
+        with:
+          name: Vitest Test Result
+          path: test-junit.xml
+          reporter: jest-junit
