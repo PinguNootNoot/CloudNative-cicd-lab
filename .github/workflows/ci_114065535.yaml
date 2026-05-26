@@ -1,14 +1,14 @@
 name: HW4 CI
 
-on: 
-  push: 
+on:
+  push:
     branches:
-      - "feature/ci-observe"
+      - 'feature/ci-observe'
 
-jobs: 
+jobs:
   ci-verification-pipeline:
     runs-on: ubuntu-latest
-    permissions: 
+    permissions:
       contents: read
       actions: read
       checks: write
@@ -22,7 +22,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: "22"
+          node-version: '22'
 
       # Install all dependencies listed in package.json
       - name: Install dependencies and run potential fix
